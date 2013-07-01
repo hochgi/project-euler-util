@@ -2,6 +2,7 @@ import hochgi.math._
 import scala.annotation._
 
 object Solver {
+
 /*
 //better go from 999 to 1 and filtering primes...
 
