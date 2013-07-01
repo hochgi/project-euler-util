@@ -2,7 +2,7 @@ import hochgi.math._
 import scala.annotation._
 
 object Solver {
-
+//pandigitalStream(List(1,2,3,4)).foreach(x => println(x.mkString(",")))
 /*
 //better go from 999 to 1 and filtering primes...
 
