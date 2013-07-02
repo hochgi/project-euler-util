@@ -2,6 +2,7 @@ import hochgi.math._
 import scala.annotation._
 
 object Solver {
+pentagonals.take(10).toList                       //> res0: List[Int] = List(1, 5, 12, 22, 35, 51, 70, 92, 117, 145)
 //pandigitalStream(List(1,2,3,4)).foreach(x => println(x.mkString(",")))
 /*
 //better go from 999 to 1 and filtering primes...

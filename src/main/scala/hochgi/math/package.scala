@@ -220,16 +220,10 @@ package object math {
     permHelper((1 to n).toList)
   }
 
-  //def getRationalFractionCycle
-
-  //	def permutations: Stream[Number] = {
-  //
-  //			def permHelper(powOf10: BigInt): Stream[Number] = {
-  //
-  //				if (powOf10 > n) Stream.Empty
-  //				else {
-  //
-  //				}
-  //			}
-  //	}
+  def pentagonals: Stream[Int] = {
+    def recHelper(n: Int): Stream[Int] = {
+      ((n*(3*n - 1))/2) #:: recHelper(n+1)
+    }
+    recHelper(1)
+  }
 }
