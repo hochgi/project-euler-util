@@ -1,6 +1,6 @@
 package hochgi.games
 
-class Card(val rank: Int, val suit: Char) {
+class Card(val rank: Int, val suit: Char) extends Ordered[Card] {
 
   def this(card: String) = this(Card.cardRank(card(0)), card(1))
   override def toString: String = Card.rankCard(rank) + " of " + {
@@ -11,6 +11,8 @@ class Card(val rank: Int, val suit: Char) {
       case 'H' => "Hearts"
     }
   }
+  
+  override def compare(that: Card): Int = this.rank - that.rank
 }
 
 object Card {

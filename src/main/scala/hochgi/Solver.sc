@@ -3,19 +3,6 @@ import scala.annotation._
 
 object Solver {
 
-case class Hand(hand: List[Card]) {
-	require(hand.length == 5)
-	
-	def stringToCards(hand: String): List[Card] = {
-		require(hand.matches("""([2-9TJQKA][CSHD]\s){4}[2-9JQKA][CSHD]"""))
-		hand.split(" ").map {new Card(_)}.toList
-	}
-	
-	def this(hand: String) = this(hand.split(" ").map {new Card(_)}.toList)
-	
-	override def toString: String = hand.mkString(",")
-}
-
 def gamesStream: Stream[(Hand, Hand)] = {
 	val it = scala.io.Source.fromFile("/home/gilad/poker.txt").getLines()
 	def recHelper: Stream[(Hand,Hand)] = {
@@ -23,22 +10,20 @@ def gamesStream: Stream[(Hand, Hand)] = {
 		else Stream.Empty
 	}
 	recHelper
-}                                                 //> gamesStream: => Stream[(Solver.Hand, Solver.Hand)]
-
-gamesStream.take(10).toList                       //> res0: List[(Solver.Hand, Solver.Hand)] = List((8 of Clubs,10 of Spades,King 
-                                                  //| of Clubs,9 of Hearts,4 of Spades,7 of Diamonds,2 of Spades,5 of Diamonds,3 o
-                                                  //| f Spades,As of Clubs), (5 of Clubs,As of Diamonds,5 of Diamonds,As of Clubs,
-                                                  //| 9 of Clubs,7 of Clubs,5 of Hearts,8 of Diamonds,10 of Diamonds,King of Spade
-                                                  //| s), (3 of Hearts,7 of Hearts,6 of Spades,King of Clubs,Jack of Spades,Queen 
-                                                  //| of Hearts,10 of Diamonds,Jack of Clubs,2 of Diamonds,8 of Spades), (10 of He
-                                                  //| arts,8 of Hearts,5 of Clubs,Queen of Spades,10 of Clubs,9 of Hearts,4 of Dia
-                                                  //| monds,Jack of Clubs,King of Spades,Jack of Spades), (7 of Clubs,5 of Hearts,
-                                                  //| King of Clubs,Queen of Hearts,Jack of Diamonds,As of Spades,King of Hearts,4
-                                                  //|  of Clubs,As of Diamonds,4 of Spades), (5 of Hearts,King of Spades,9 of Club
-                                                  //| s,7 of Diamonds,9 of Hearts,8 of Diamonds,3 of Spades,5 of Diamonds,5 of Clu
-                                                  //| bs,As of Hearts), (6 of Hearts,4 of Hearts,5 of Clubs,3 of Hearts,2 of Heart
-                                                  //| s,3 of Spades,Queen of H
-                                                  //| Output exceeds cutoff limit.
+}                                                 //> gamesStream: => Stream[(hochgi.games.Hand, hochgi.games.Hand)]
+val x = new Hand("AH 2H 3H 4H 5H")                //> x  : hochgi.games.Hand = [2 of Hearts,3 of Hearts,4 of Hearts,5 of Hearts,As
+                                                  //|  of Hearts]
+x.suited                                          //> res0: Boolean = true
+x.straight                                        //> res1: Boolean = true
+gamesStream.take(4).toList                        //> res2: List[(hochgi.games.Hand, hochgi.games.Hand)] = List(([4 of Spades,8 of
+                                                  //|  Clubs,9 of Hearts,10 of Spades,King of Clubs],[2 of Spades,3 of Spades,5 of
+                                                  //|  Diamonds,7 of Diamonds,As of Clubs]), ([5 of Clubs,5 of Diamonds,9 of Clubs
+                                                  //| ,As of Diamonds,As of Clubs],[5 of Hearts,7 of Clubs,8 of Diamonds,10 of Dia
+                                                  //| monds,King of Spades]), ([3 of Hearts,6 of Spades,7 of Hearts,Jack of Spades
+                                                  //| ,King of Clubs],[2 of Diamonds,8 of Spades,10 of Diamonds,Jack of Clubs,Quee
+                                                  //| n of Hearts]), ([5 of Clubs,8 of Hearts,10 of Hearts,10 of Clubs,Queen of Sp
+                                                  //| ades],[4 of Diamonds,9 of Hearts,Jack of Clubs,Jack of Spades,King of Spades
+                                                  //| ]))
 
 //pandigitalStream(List(1,2,3,4)).foreach(x => println(x.mkString(",")))
 /*
