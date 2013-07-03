@@ -17,7 +17,11 @@ object Hand {
 	
 	if(suited && straight) new StraightFlush(sorted)
 	else if(grouped.exists(_._2.length == 4)) new FourOfAKind(sorted, grouped)
-	else	???
+	else if(grouped.exists(_._2.length == 3) && grouped.exists(_._2.length == 2)) new FullHouse(sorted, grouped)
+	else if(suited) new Flush(sorted)
+	else if(straight) new Straight(sorted)
+	else if(grouped.exists(_._2.length == 3)) new ThreeOfAKind(sorted, grouped)
+	else ???
 	}
 
 	def stringToCards(hand: String): List[Card] = {
@@ -42,20 +46,45 @@ case class HighCard(sorted: List[Card]) extends Hand(sorted) {
 case class OnePair(sorted: List[Card]) extends Hand(sorted) {
 	override def compare(that: Hand) = ???
 }
+
 case class TwoPairs(sorted: List[Card]) extends Hand(sorted) {
 	override def compare(that: Hand) = ???
 }
-case class ThreeOfAKind(sorted: List[Card]) extends Hand(sorted) {
-	override def compare(that: Hand) = ???
+
+case class ThreeOfAKind(sorted: List[Card], grouped: Map[Int,List[Card]]) extends Hand(sorted) {
+	override def compare(that: Hand) = ??? /*that match {
+	  case ThreeOfAKind(s,g) => 
+	}*/
 }
+
 case class Straight(sorted: List[Card]) extends Hand(sorted) {
-	override def compare(that: Hand) = ???
+	override def compare(that: Hand) = that match {
+	  case Straight(s) => sorted.head.rank - s.head.rank //A,2,3,4,5 is sorted to have 2 at the start and not A
+	  case _: ThreeOfAKind => 1
+	  case _: TwoPairs => 1
+	  case _: OnePair => 1
+	  case _: HighCard => 1
+	  case _ => -1
+	}
 }
+
 case class Flush(sorted: List[Card]) extends Hand(sorted) {
-	override def compare(that: Hand) = ???
+	override def compare(that: Hand) = that match {
+	  case Flush(s) => sorted zip s map{case (a,b) => a.rank - b.rank} filter(_ == 0) last  
+	  case _: FullHouse => -1
+	  case _: FourOfAKind => -1
+	  case _: StraightFlush => -1
+	  case _ => 1
+	}
 }
-case class FullHouse(sorted: List[Card]) extends Hand(sorted) {
-	override def compare(that: Hand) = ???
+
+case class FullHouse(sorted: List[Card], grouped: Map[Int,List[Card]]) extends Hand(sorted) {
+	override def compare(that: Hand) = that match {
+	  case FullHouse(_,g) => grouped.filter(_._2.length == 3).keys.head -  g.filter(_._2.length == 3).keys.head
+	  case _: FourOfAKind => -1
+	  case _: StraightFlush => -1
+	  case _ => 1
+	}
 }
 
 case class FourOfAKind(sorted: List[Card], grouped: Map[Int,List[Card]]) extends Hand(sorted) {
