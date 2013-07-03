@@ -3,27 +3,22 @@ import scala.annotation._
 
 object Solver {
 
-def gamesStream: Stream[(Hand, Hand)] = {
-	val it = scala.io.Source.fromFile("/home/gilad/poker.txt").getLines()
-	def recHelper: Stream[(Hand,Hand)] = {
-		if(it.hasNext) ((a: (String,String)) => (new Hand(a._1), new Hand(a._2.tail)))((it.next).splitAt(14)) #:: recHelper
-		else Stream.Empty
-	}
-	recHelper
-}                                                 //> gamesStream: => Stream[(hochgi.games.Hand, hochgi.games.Hand)]
-val x = new Hand("AH 2H 3H 4H 5H")                //> x  : hochgi.games.Hand = [2 of Hearts,3 of Hearts,4 of Hearts,5 of Hearts,As
-                                                  //|  of Hearts]
-x.suited                                          //> res0: Boolean = true
-x.straight                                        //> res1: Boolean = true
-gamesStream.take(4).toList                        //> res2: List[(hochgi.games.Hand, hochgi.games.Hand)] = List(([4 of Spades,8 of
-                                                  //|  Clubs,9 of Hearts,10 of Spades,King of Clubs],[2 of Spades,3 of Spades,5 of
-                                                  //|  Diamonds,7 of Diamonds,As of Clubs]), ([5 of Clubs,5 of Diamonds,9 of Clubs
-                                                  //| ,As of Diamonds,As of Clubs],[5 of Hearts,7 of Clubs,8 of Diamonds,10 of Dia
-                                                  //| monds,King of Spades]), ([3 of Hearts,6 of Spades,7 of Hearts,Jack of Spades
-                                                  //| ,King of Clubs],[2 of Diamonds,8 of Spades,10 of Diamonds,Jack of Clubs,Quee
-                                                  //| n of Hearts]), ([5 of Clubs,8 of Hearts,10 of Hearts,10 of Clubs,Queen of Sp
-                                                  //| ades],[4 of Diamonds,9 of Hearts,Jack of Clubs,Jack of Spades,King of Spades
-                                                  //| ]))
+	def gamesStream: Stream[(Hand, Hand)] = {
+		val it = scala.io.Source.fromFile("/home/gilad/poker.txt").getLines()
+		def recHelper: Stream[(Hand, Hand)] = {
+			if (it.hasNext) ((a: (String, String)) => (new Hand(a._1), new Hand(a._2.tail)))((it.next).splitAt(14)) #:: recHelper
+			else Stream.Empty
+		}
+		recHelper
+	}                                         //> gamesStream: => Stream[(hochgi.games.Hand, hochgi.games.Hand)]
+	
+	val x = new Hand("2H 5H AS 4H 3H")        //> x  : hochgi.games.Hand = [2 of Hearts,3 of Hearts,4 of Hearts,5 of Hearts,As
+                                                  //|  of Spades]
+
+	x.suited                                  //> res0: Boolean = false
+	x.straight                                //> res1: Boolean = true
+
+//gamesStream.take(4).toList
 
 //pandigitalStream(List(1,2,3,4)).foreach(x => println(x.mkString(",")))
 /*
