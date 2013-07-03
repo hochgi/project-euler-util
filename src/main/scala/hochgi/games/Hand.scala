@@ -21,7 +21,9 @@ object Hand {
 	else if(suited) new Flush(sorted)
 	else if(straight) new Straight(sorted)
 	else if(grouped.exists(_._2.length == 3)) new ThreeOfAKind(sorted, grouped)
-	else ???
+	else if(grouped.filter(_._2.length == 2).size == 2) new TwoPairs(sorted, grouped)
+	else if(grouped.filter(_._2.length == 2).size == 1) new OnePair(sorted, grouped.filter(_._2.length == 2).head._1)
+	else HighCard(sorted)
 	}
 
 	def stringToCards(hand: String): List[Card] = {
@@ -43,18 +45,40 @@ case class HighCard(sorted: List[Card]) extends Hand(sorted) {
 	}
 }
 
-case class OnePair(sorted: List[Card]) extends Hand(sorted) {
-	override def compare(that: Hand) = ???
+case class OnePair(sorted: List[Card], pairRank: Int) extends Hand(sorted) {
+	override def compare(that: Hand) = that match {
+	  case OnePair(s,p) => {
+	    if(p != pairRank) pairRank - p
+	    else sorted zip s map{case(a,b) => a.rank - b.rank} filter(_ != 0) last
+	  }
+	  case _: HighCard => 1
+	  case _ => -1
+	}
 }
 
-case class TwoPairs(sorted: List[Card]) extends Hand(sorted) {
-	override def compare(that: Hand) = ???
+case class TwoPairs(sorted: List[Card], grouped: Map[Int,List[Card]]) extends Hand(sorted) {
+	override def compare(that: Hand) = that match {
+	  case TwoPairs(_,g) => {
+	    val p1 = grouped.filter(_._2.length == 2).keySet
+	    val p2 = g.filter(_._2.length == 2).keySet
+	    if(p1.max != p2.max) p1.max - p2.max
+	    else if(p1.min != p2.min) p1.min - p2.min
+	    else grouped.filter(_._2.length == 1).head._1 - g.filter(_._2.length == 1).head._1 
+	  }
+	  case _: OnePair => 1
+	  case _: HighCard => 1
+	  case _  => -1
+	}
 }
 
 case class ThreeOfAKind(sorted: List[Card], grouped: Map[Int,List[Card]]) extends Hand(sorted) {
-	override def compare(that: Hand) = ??? /*that match {
-	  case ThreeOfAKind(s,g) => 
-	}*/
+	override def compare(that: Hand) = that match {
+	  case ThreeOfAKind(_,g) => grouped.filter(_._2.length == 3).keys.head -  g.filter(_._2.length == 3).keys.head
+	  case _: TwoPairs => 1
+	  case _: OnePair => 1
+	  case _: HighCard => 1
+	  case _  => -1
+	}
 }
 
 case class Straight(sorted: List[Card]) extends Hand(sorted) {

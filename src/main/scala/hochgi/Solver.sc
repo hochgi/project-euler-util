@@ -4,7 +4,7 @@ import scala.annotation._
 object Solver {
 
 	def gamesStream: Stream[(Hand, Hand)] = {
-		val it = scala.io.Source.fromFile("/home/gilad/poker.txt").getLines()
+		val it = scala.io.Source.fromFile("/home/giladhoch/poker.txt").getLines()
 		def recHelper: Stream[(Hand, Hand)] = {
 			if (it.hasNext) ((a: (String, String)) => (Hand(a._1), Hand(a._2.tail)))((it.next).splitAt(14)) #:: recHelper
 			else Stream.Empty
@@ -12,10 +12,8 @@ object Solver {
 		recHelper
 	}                                         //> gamesStream: => Stream[(hochgi.games.Hand, hochgi.games.Hand)]
 	
-    Hand("5S 5H 5C 5D 3H") < Hand("AH 5H 2H 4H 3H")
-                                                  //> res0: Boolean = true
-   Hand("AH 5H 2H 4H 3H") == Hand("AS 5S 2S 4S 3S")
-                                                  //> res1: Boolean = false
+  gamesStream.foldLeft(0){case (a,(c1,c2)) => if(c1 > c2) a + 1 else a}
+                                                  //> res0: Int = 376
                  
                  
   //val y = Hand("2H 5S 7H 4H 3H")
