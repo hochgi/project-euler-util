@@ -165,14 +165,14 @@ package object math {
     panParoductStreamGenerator(2)
   }
 
-  def pandigitalStream[T](l: List[T], f: List[T] => List[T] = (x: List[T]) => x): Stream[List[T]] = l match {
+  def permutationStream[T](l: List[T], f: List[T] => List[T] = (x: List[T]) => x): Stream[List[T]] = l match {
     case x :: Nil => Stream(f(List(x)))
     case _ => mergeListOfStreams(l map { x =>
       {
         val index = l.indexOf(x)
         val ls = ((a: (List[T], List[T])) => a._1 ::: a._2.tail)(l.splitAt(index))
         val g = (someList: List[T]) => x :: someList
-        pandigitalStream(ls, g andThen f)
+        permutationStream(ls, g andThen f)
       }
     })
   }

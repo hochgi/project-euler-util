@@ -6,17 +6,22 @@ object Solver {
 	def gamesStream: Stream[(Hand, Hand)] = {
 		val it = scala.io.Source.fromFile("/home/gilad/poker.txt").getLines()
 		def recHelper: Stream[(Hand, Hand)] = {
-			if (it.hasNext) ((a: (String, String)) => (new Hand(a._1), new Hand(a._2.tail)))((it.next).splitAt(14)) #:: recHelper
+			if (it.hasNext) ((a: (String, String)) => (Hand(a._1), Hand(a._2.tail)))((it.next).splitAt(14)) #:: recHelper
 			else Stream.Empty
 		}
 		recHelper
 	}                                         //> gamesStream: => Stream[(hochgi.games.Hand, hochgi.games.Hand)]
 	
-	val x = new Hand("2H 5H AS 4H 3H")        //> x  : hochgi.games.Hand = [2 of Hearts,3 of Hearts,4 of Hearts,5 of Hearts,As
-                                                  //|  of Spades]
+    Hand("5S 5H 5C 5D 3H") < Hand("AH 5H 2H 4H 3H")
+                                                  //> res0: Boolean = true
+   Hand("AH 5H 2H 4H 3H") == Hand("AS 5S 2S 4S 3S")
+                                                  //> res1: Boolean = false
+                 
+                 
+  //val y = Hand("2H 5S 7H 4H 3H")
 
-	x.suited                                  //> res0: Boolean = false
-	x.straight                                //> res1: Boolean = true
+	//x.suited
+	//x.straight
 
 //gamesStream.take(4).toList
 
