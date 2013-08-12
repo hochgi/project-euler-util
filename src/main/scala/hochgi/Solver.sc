@@ -1,8 +1,29 @@
 import hochgi.games._
+import hochgi.math._
 import scala.annotation._
 
 object Solver {
 
+
+val f = (0 to 9) map (i => (i -> factorial(i).toInt)) toMap
+                                                  //> f  : scala.collection.immutable.Map[Int,Int] = Map(0 -> 1, 5 -> 120, 1 -> 1,
+                                                  //|  6 -> 720, 9 -> 362880, 2 -> 2, 7 -> 5040, 3 -> 6, 8 -> 40320, 4 -> 24)
+                                               
+
+val m = scala.collection.mutable.Map[Int,Int](1 -> 1, 2 -> 1)
+                                                  //> m  : scala.collection.mutable.Map[Int,Int] = Map(2 -> 1, 1 -> 1)
+
+def toFactSum(n: Int): Int = (n.digits map (factorial(_).toInt)).sum
+                                                  //> toFactSum: (n: Int)Int
+def countLoopLength(orig: Int, curr: Int, iter: Int, frst: Int, seen: Boolean): Unit = {
+if(seen && curr == frst) m.update(orig, iter)
+else if(m.contains(curr)) m.update(orig, iter + m(curr))
+else if(List(169, 871, 872, 1454, 363601, 45361, 45362).contains(curr)) countLoopLength(orig, toFactSum(curr), iter + 1, curr, true) 
+else countLoopLength(orig, toFactSum(curr), iter+1, frst, seen)
+}                                                 //> countLoopLength: (o: Int, n: Int, i: Int)Unit
+
+(3 to 4).filterNot(i => if(i == toFactSum(i)){m.update(i,1); true} else false).foreach(i => countLoopLength(i,toFactSum(i),1, 0, false))
+/*
 	def gamesStream: Stream[(Hand, Hand)] = {
 		val it = scala.io.Source.fromFile("/home/gilad/poker.txt").getLines()
 		def recHelper: Stream[(Hand, Hand)] = {
@@ -10,13 +31,11 @@ object Solver {
 			else Stream.Empty
 		}
 		recHelper
-	}                                         //> gamesStream: => Stream[(hochgi.games.Hand, hochgi.games.Hand)]
+	}
 	
     Hand("5S 5H 5C 5D 3H") < Hand("AH 5H 2H 4H 3H")
-                                                  //> res0: Boolean = true
    Hand("AH 5H 2H 4H 3H") == Hand("AS 5S 2S 4S 3S")
-                                                  //> res1: Boolean = false
-                 
+                 */
                  
   //val y = Hand("2H 5S 7H 4H 3H")
 
