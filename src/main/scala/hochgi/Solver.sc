@@ -4,25 +4,31 @@ import scala.annotation._
 
 object Solver {
 
-
+/*
+	----------
+	problem 74
+	----------
 val f = (0 to 9) map (i => (i -> factorial(i).toInt)) toMap
-                                                  //> f  : scala.collection.immutable.Map[Int,Int] = Map(0 -> 1, 5 -> 120, 1 -> 1,
-                                                  //|  6 -> 720, 9 -> 362880, 2 -> 2, 7 -> 5040, 3 -> 6, 8 -> 40320, 4 -> 24)
                                                
+//(1 to 1000000).filter(n => n == toFactSum(n)).map((_,1)) // == ((1,1), (2,1), (145,1), (40585,1))
+val m = scala.collection.mutable.Map[Int,Int](1 -> 1, 2 -> 1, 145 -> 1, 40585 -> 1, 169 -> 3, 363601 -> 3, 1454 -> 3, 871 -> 2, 872 -> 2, 45361 -> 2, 45362 -> 2)
 
-val m = scala.collection.mutable.Map[Int,Int](1 -> 1, 2 -> 1)
-                                                  //> m  : scala.collection.mutable.Map[Int,Int] = Map(2 -> 1, 1 -> 1)
+def toFactSum(n: Int): Int = (n.digits map (f(_))).sum
+def updateMap(hist: List[Int], iter: Int) = {
+	val ma = hist zip ((iter - hist.length + 1) to iter)
+	m ++= ma
+}
+                                                  
+def countLoopLength(curr: Int, hist: List[Int], iter: Int, frst: Int, seen: Boolean): Unit = {
+	if(m.contains(curr)) updateMap(hist, iter + m(curr))
+	else countLoopLength(toFactSum(curr), curr :: hist, iter+1, frst, seen)
+}
+updateMap(11 :: Nil, 2)
+(3 to 1000000).filterNot(m.contains(_)).foreach(i => countLoopLength(toFactSum(i), i :: Nil,1, 0, false))
 
-def toFactSum(n: Int): Int = (n.digits map (factorial(_).toInt)).sum
-                                                  //> toFactSum: (n: Int)Int
-def countLoopLength(orig: Int, curr: Int, iter: Int, frst: Int, seen: Boolean): Unit = {
-if(seen && curr == frst) m.update(orig, iter)
-else if(m.contains(curr)) m.update(orig, iter + m(curr))
-else if(List(169, 871, 872, 1454, 363601, 45361, 45362).contains(curr)) countLoopLength(orig, toFactSum(curr), iter + 1, curr, true) 
-else countLoopLength(orig, toFactSum(curr), iter+1, frst, seen)
-}                                                 //> countLoopLength: (o: Int, n: Int, i: Int)Unit
+m.count{case (_,v) => v ==60}
+*/
 
-(3 to 4).filterNot(i => if(i == toFactSum(i)){m.update(i,1); true} else false).foreach(i => countLoopLength(i,toFactSum(i),1, 0, false))
 /*
 	def gamesStream: Stream[(Hand, Hand)] = {
 		val it = scala.io.Source.fromFile("/home/gilad/poker.txt").getLines()
