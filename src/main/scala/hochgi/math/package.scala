@@ -226,4 +226,11 @@ package object math {
     }
     recHelper(1)
   }
+  
+  def triangles: Stream[Int] = {
+	  def recHelper(n: Int): Stream[Int] = {
+	 	  (n*(n+1)/2) #:: recHelper(n+1)
+	  }
+	  recHelper(1)
+  }
 }

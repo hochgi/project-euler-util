@@ -4,6 +4,66 @@ import scala.annotation._
 
 object Solver {
 
+primes.take(50).toList                            //> res0: List[BigInt] = List(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43
+                                                  //| , 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 
+                                                  //| 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 2
+                                                  //| 11, 223, 227, 229)
+/*
+	----------
+	problem 93
+	----------
+val ss = Set[Double](0,1,2,3,4,5,6,7,8,9).subsets(4)
+
+def longestConsecutives(s: Set[Double]): Int = {
+
+	def reachableValues(xs: Set[Double]): Set[Double] = {
+		if(xs.size == 1) xs
+		else {
+			val it = xs.subsets.filterNot(x => x.isEmpty || x == xs).map(subset => (xs.filterNot(subset.contains(_)), subset)) //every set partition will appear twice - but i won't handle this...
+			val sb = new scala.collection.mutable.SetBuilder[Double, Set[Double]](Set())
+			while(it.hasNext){
+				val (s1,s2) = it.next
+				val r1 = reachableValues(s1)
+				val r2 = reachableValues(s2)
+				r1.foreach{v1 =>
+					r2.foreach{v2 =>
+						sb ++= Set(v1 - v2, v1 + v2, v1 * v2, v1 / v2)
+					}
+				}
+			}
+			val res = sb.result
+			res
+		}
+	}
+	
+	def longestStrickFromList(l: List[Double]): Int = l match {
+		case Nil => 0
+		case x :: Nil => 1
+		case _ => {
+			val i = 1 + l.sliding(2).takeWhile{case List(a,b) => (a+1) == b}.toList.length
+			scala.math.max(i,longestStrickFromList(l.slice(i, l.length)))
+		}
+	}
+	
+	longestStrickFromList(reachableValues(s).filter(v => v > 0 && v.isWhole).toList.sortWith(_ < _))
+}
+
+var max = 28
+var set = Set[Double](1,2,3,4)
+
+ss.foreach{
+s => {
+		val x = longestConsecutives(s)
+		if(x > max) {
+			max = x
+			set = s
+		}
+	}
+}
+
+max
+set
+*/
 /*
 	----------
 	problem 74
