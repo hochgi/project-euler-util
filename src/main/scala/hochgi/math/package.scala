@@ -5,16 +5,16 @@ import scala.annotation._
 package object math {
   //IMPLICITS:
 
-  /**
-   * Int to Number
-   */
-  implicit def Int2Number(i: Int): Number = new Number(i)
+//  /**
+//   * Int to Number
+//   */
+//  def Int2Number(i: Int): Number = new Number(i)
 
-  implicit def Number2BigInt(n: Number): BigInt = n.getBigInt
+//  def Number2BigInt(n: Number): BigInt = n.getBigInt
 
-  implicit def BigInt2Rational(n: BigInt) = new Rational(n)
+//  def BigInt2Rational(n: BigInt) = new Rational(n)
 
-  implicit def BigInt2Number(n: BigInt) = Number(n)
+  def bigInt2Number(n: BigInt) = Number(n)
 
   /**
    * converts a number to it's binary representation
@@ -61,9 +61,9 @@ package object math {
   def gcd(a: Number, b: Number): Number = if (b.getBigInt == 0) a else gcd(b, a % b)
 
   /**
-   * List(1,2,3,4) => BigInt(1*10^3 + 2*10^2 + 3*10^1 + 4*10^0)
+   * List(1,2,3,4) => BigInt(1*10^3^ + 2*10^2^ + 3*10^1^ + 4*10^0^)
    */
-  implicit def digits2BigInt(l: List[Int]): BigInt = {
+  def digits2BigInt(l: List[Int]): BigInt = {
 
     @tailrec
     def digits2BigIntHelper(accu: List[BigInt], remainingDigits: List[Int]): List[BigInt] = remainingDigits match {
@@ -72,8 +72,13 @@ package object math {
     }
 
     if (l == Nil) BigInt(0)
-    else digits2BigIntHelper(BigInt(l.head) :: Nil, l.tail) sum
+    else digits2BigIntHelper(BigInt(l.head) :: Nil, l.tail).sum
   }
+
+  /**
+   * List(1,2,3,4) => BigInt(1*10^3^ + 2*10^2^ + 3*10^1^ + 4*10^0^)
+   */
+  def digits2Int(l: Seq[Int]): Int = l.foldRight(0 -> 1) { case (dgt, (sum, mul)) => (sum + dgt * mul, mul * 10) }._1
 
   /**
    * n!
@@ -99,7 +104,7 @@ package object math {
     @tailrec
     def circularNumbersHelper(accu: List[BigInt], hd: List[Int], tl: List[Int]): List[BigInt] = tl match {
       case Nil => accu
-      case x :: xs => circularNumbersHelper((tl ::: hd) :: accu, hd ::: List(x), xs)
+      case x :: xs => circularNumbersHelper(digits2BigInt(tl ::: hd) :: accu, hd ::: List(x), xs)
     }
 
     circularNumbersHelper(Nil, Nil, n.digits)
@@ -122,14 +127,14 @@ package object math {
   /**
    * returns a stream of all prime numbers
    */
-  def primes: Stream[BigInt] = {
+  def primes: LazyList[BigInt] = {
 
-    def primeStreamGenerator(current: BigInt, streamSoFar: Stream[BigInt]): Stream[BigInt] = {
+    def primeStreamGenerator(current: BigInt, streamSoFar: LazyList[BigInt]): LazyList[BigInt] = {
       if (streamSoFar.forall(i => current % i != 0)) current #:: primeStreamGenerator(current + 2, current #:: streamSoFar)
       else primeStreamGenerator(current + 2, streamSoFar)
     }
 
-    2 #:: primeStreamGenerator(3, Stream.Empty)
+    2 #:: primeStreamGenerator(3, LazyList.empty)
   }
 
   def devisors(n: BigInt): IndexedSeq[BigInt] = (BigInt(1) to (n / 2)).filter(n % _ == 0)
@@ -154,19 +159,19 @@ package object math {
     dl.length == k && isPandigital(dl)
   }
 
-  def pandigitalProductStream: Stream[Int] = {
+  def pandigitalProductStream: LazyList[Int] = {
 
-    def panParoductStreamGenerator(n: Int): Stream[Int] = {
+    def panParoductStreamGenerator(n: Int): LazyList[Int] = {
       if (isKPandigitalProduct(n, 9)) n #:: panParoductStreamGenerator(n + 1)
-      else if (n > 10000) Stream.Empty
+      else if (n > 10000) LazyList.empty
       else panParoductStreamGenerator(n + 1)
     }
 
     panParoductStreamGenerator(2)
   }
 
-  def permutationStream[T](l: List[T], f: List[T] => List[T] = (x: List[T]) => x): Stream[List[T]] = l match {
-    case x :: Nil => Stream(f(List(x)))
+  def permutationStream[T](l: List[T], f: List[T] => List[T] = (x: List[T]) => x): LazyList[List[T]] = l match {
+    case x :: Nil => LazyList(f(List(x)))
     case _ => mergeListOfStreams(l map { x =>
       {
         val index = l.indexOf(x)
@@ -177,13 +182,13 @@ package object math {
     })
   }
 
-  def mergeListOfStreams[T](listOfStreams: List[Stream[T]]): Stream[T] = listOfStreams match {
-    case Nil => Stream.Empty
+  def mergeListOfStreams[T](listOfStreams: List[LazyList[T]]): LazyList[T] = listOfStreams match {
+    case Nil => LazyList.empty
     case x :: Nil => x
     case x :: xs => {
-      def recHelper(s: Stream[T], los: List[Stream[T]]): Stream[T] = (s, los) match {
-        case (Stream.Empty, Nil) => Stream.Empty
-        case (Stream.Empty, _) => recHelper(los.head, los.tail)
+      def recHelper(s: LazyList[T], los: List[LazyList[T]]): LazyList[T] = (s, los) match {
+        case (lls, Nil) if lls.isEmpty => lls
+        case (lls, _) if lls.isEmpty => recHelper(los.head, los.tail)
         case (_, _) => s.head #:: recHelper(s.tail, los)
       }
       recHelper(x, xs)
@@ -194,23 +199,26 @@ package object math {
     case None => throw new RuntimeException("could not find sqrt - did you entered a negative value?")
     case Some(x) => x
   }
-  def bigSqrtExact(n: BigInt): Option[BigInt] = (BigInt(1) to n).takeWhile(i => i * i <= n).find(i => i * i == n)
+  def bigSqrtExact(n: BigInt): Option[BigInt] = {
+    val sqrCandid = (BigInt(1) to n).dropWhile(i => i * i < n).head
+    Option.when(sqrCandid * sqrCandid == n)(sqrCandid)
+  }
 
-  def permutations(n: Int): Stream[List[Int]] = {
-    def permHelper(availableDigits: List[Int]): Stream[List[Int]] = availableDigits match {
-      case Nil => Stream(Nil)
+  def permutations(n: Int): LazyList[List[Int]] = {
+    def permHelper(availableDigits: List[Int]): LazyList[List[Int]] = availableDigits match {
+      case Nil => LazyList(Nil)
       case l: List[Int] => {
 
         val y = for {
-          i <- 0 until l.length
+          i <- l.indices
           x = l(i)
           xs = l.dropRight(l.length - i) ::: l.drop(i + 1)
         } yield permHelper(xs).map(ys => x :: ys)
 
-        var acc: Stream[List[Int]] = Stream.Empty
+        var acc: LazyList[List[Int]] = LazyList.empty
         val it = y.iterator
         while (it.hasNext) {
-          acc = acc ++ it.next
+          acc = acc ++ it.next()
         }
 
         acc
@@ -220,15 +228,15 @@ package object math {
     permHelper((1 to n).toList)
   }
 
-  def pentagonals: Stream[Int] = {
-    def recHelper(n: Int): Stream[Int] = {
+  def pentagonals: LazyList[Int] = {
+    def recHelper(n: Int): LazyList[Int] = {
       ((n*(3*n - 1))/2) #:: recHelper(n+1)
     }
     recHelper(1)
   }
   
-  def triangles: Stream[Int] = {
-	  def recHelper(n: Int): Stream[Int] = {
+  def triangles: LazyList[Int] = {
+	  def recHelper(n: Int): LazyList[Int] = {
 	 	  (n*(n+1)/2) #:: recHelper(n+1)
 	  }
 	  recHelper(1)

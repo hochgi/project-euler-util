@@ -49,7 +49,7 @@ case class OnePair(sorted: List[Card], pairRank: Int) extends Hand(sorted) {
 	override def compare(that: Hand) = that match {
 	  case OnePair(s,p) => {
 	    if(p != pairRank) pairRank - p
-	    else sorted zip s map{case(a,b) => a.rank - b.rank} filter(_ != 0) last
+	    else sorted.zip(s).map{case(a,b) => a.rank - b.rank}.filter(_ != 0).last
 	  }
 	  case _: HighCard => 1
 	  case _ => -1
@@ -94,7 +94,7 @@ case class Straight(sorted: List[Card]) extends Hand(sorted) {
 
 case class Flush(sorted: List[Card]) extends Hand(sorted) {
 	override def compare(that: Hand) = that match {
-	  case Flush(s) => sorted zip s map{case (a,b) => a.rank - b.rank} filter(_ == 0) last  
+	  case Flush(s) => sorted.zip(s).map{case (a,b) => a.rank - b.rank}.filter(_ == 0).last
 	  case _: FullHouse => -1
 	  case _: FourOfAKind => -1
 	  case _: StraightFlush => -1

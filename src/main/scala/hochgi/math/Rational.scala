@@ -1,14 +1,14 @@
 package hochgi.math
 
 import scala.math.Numeric
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
+//import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 class Rational(n: BigInt, d: BigInt) extends Numeric[Rational] {
 	require(d != 0)
 
 	private val g = n.gcd(d)
-	val numer = n / g
-	val denom = d / g
+	val numer: BigInt = n / g
+	val denom: BigInt = d / g
 
 	def this(n: BigInt) = this(n, 1)
 	def this() = this(0, 1)
@@ -65,7 +65,7 @@ class Rational(n: BigInt, d: BigInt) extends Numeric[Rational] {
 	 * 
 	 */
 	def getDecimalRepresentationCycleLength: Int = {
-		val pDevs: Set[BigInt] = devisors(denom).filter(_.isPrime).toSet
+		val pDevs: Set[BigInt] = devisors(denom).filter(n => bigInt2Number(n).isPrime).toSet
 		if((Set(BigInt(2),BigInt(5)).intersect(pDevs) == pDevs) && !pDevs.isEmpty) 0
 		else {
 			var lpow = 1
@@ -85,5 +85,15 @@ class Rational(n: BigInt, d: BigInt) extends Numeric[Rational] {
 		}
 	}
 	
-	override def toString = numer + "/" + denom
+	override def toString: String = numer.toString() + "/" + denom.toString()
+
+	override def parseString(str: String): Option[Rational] = {
+		val bigintNumeric = implicitly[Numeric[BigInt]]
+		val (nStr,slashD) = str.span('/'.!=)
+		val dStr = slashD.tail
+		for {
+			n <- bigintNumeric.parseString(nStr)
+			d <- bigintNumeric.parseString(dStr)
+		} yield new Rational(n,d)
+	}
 }

@@ -1,6 +1,6 @@
 package hochgi.math
 
-import scala.math.pow
+//import scala.math.pow
 import scala.math.Numeric
 
 class Number(private val n: BigInt) extends Numeric[Number] {
@@ -22,7 +22,7 @@ class Number(private val n: BigInt) extends Numeric[Number] {
 			rv
 		}
 	}
-	
+
 	def digits: List[Int] = {
 			def digitsHelper(i: BigInt): List[Int] = {
 				if (i < 10) List(i.toInt)
@@ -37,7 +37,7 @@ class Number(private val n: BigInt) extends Numeric[Number] {
 	def devisors: IndexedSeq[Number] = (BigInt(1) to (n/2)).filter(n % _ == 0).map(Number(_))
 
 	def %(i: Number) = Number(n % i.getBigInt)
-	
+
 	//Numeric methods:
 	def plus(x: Number, y: Number): Number = Number(x.n + y.n)
 	def minus(x: Number, y: Number): Number = Number(x.n - y.n)
@@ -49,24 +49,26 @@ class Number(private val n: BigInt) extends Numeric[Number] {
 	def toFloat(x: Number): Float = x.n.toFloat
 	def toDouble(x: Number): Double = x.n.toDouble
 	def compare(x: Number, y: Number): Int = scala.math.Ordering.BigInt.compare(x.n, y.n)
-	
+
 	//overrides:
 	override def toString: String = n.toString
+
+	override def parseString(str: String): Option[Number] = implicitly[Numeric[BigInt]].parseString(str).map(Number.apply)
 }
 
 object Number {
 	private lazy val pMap = scala.collection.mutable.Map[BigInt,Boolean]()
 
-	def apply(n: BigInt) = new Number(n) 
-	
+	def apply(n: BigInt) = new Number(n)
+
 //	def primes: Stream[Number] = {
-//		
+//
 //		def primeStreamGenerator(current: Number, streamSoFar: Stream[Number]): Stream[Number] = {
 //			if(streamSoFar.forall(i => current % i != 0)) current #:: primeStreamGenerator(Number(current.n + 1), current #:: streamSoFar)
 //			else primeStreamGenerator(Number(current.n + 1), streamSoFar)
 //		}
-//		
+//
 //		primeStreamGenerator(2, Stream.Empty)
 //	}
-	
+
 }
