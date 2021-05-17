@@ -80,6 +80,14 @@ package object math {
    */
   def digits2Int(l: Seq[Int]): Int = l.foldRight(0 -> 1) { case (dgt, (sum, mul)) => (sum + dgt * mul, mul * 10) }._1
 
+  def int2digits(i: Int, acc: List[Int] = Nil): List[Int] = {
+    if(i == 0) {
+      if(acc.nonEmpty) acc
+      else List(0)
+    }
+    else int2digits(i / 10, (i % 10) :: acc)
+  }
+
   /**
    * n!
    */
@@ -94,6 +102,36 @@ package object math {
 
     fHelper(n, 1)
   }
+
+  val binom10: Map[(Int,Int), Int] = {
+
+    def binom(n: Int, k: Int, acc: Map[(Int, Int), Int]): Map[(Int, Int), Int] =
+      acc.updated(n -> k, {
+        if (n == k || k == 0) 1
+        else acc(n - 1, k) + acc(n - 1, k - 1)
+      })
+
+    (0 to 10).foldLeft(Map.empty[(Int, Int), Int]) { case (accn, n) =>
+      (0 to n).foldLeft(accn) { case (acck, k) =>
+        binom(n, k, acck)
+      }
+    }
+  }
+
+  def digitMask(n: Int, k: Int): Iterator[List[Boolean]] = {
+    if(n == k)      Iterator.single(List.fill(n)(true))
+    else if(k == 0) Iterator.single(List.fill(n)(false))
+    else new Iterator[List[Boolean]] {
+
+      private[this] val hs = digitMask(n - 1, k).map(false :: _)
+      private[this] val ts = digitMask(n - 1, k - 1).map(true :: _)
+
+      override def hasNext: Boolean = ts.hasNext
+
+      override def next(): List[Boolean] = hs.nextOption().getOrElse(ts.next())
+    }
+  }
+
 
   /**
    * returns rotations of the number.
@@ -127,7 +165,7 @@ package object math {
   /**
    * returns a stream of all prime numbers
    */
-  def primes: LazyList[BigInt] = {
+  val primes: LazyList[BigInt] = {
 
     def primeStreamGenerator(current: BigInt, streamSoFar: LazyList[BigInt]): LazyList[BigInt] = {
       if (streamSoFar.forall(i => current % i != 0)) current #:: primeStreamGenerator(current + 2, current #:: streamSoFar)

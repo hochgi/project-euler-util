@@ -1,13 +1,33 @@
 package hochgi
 
-import hochgi.math.{Number, Rational, bigSqrtExact, digits2BigInt, digits2Int, primes}
+import hochgi.math.{Number, Rational, bigSqrtExact, digits2BigInt, digits2Int, int2digits, primes, digitMask}
 
 import scala.util.control.Breaks.{break, breakable}
 
 object Main extends App {
 
 
-  println(problem46)
+  println(problem51)
+
+  def problem51: Option[Seq[Int]] = {
+
+    (for {
+      numDigits <- Iterator.range(2, 10)
+      wildCards <- numDigits to 1 by -1
+      locations <- digitMask(numDigits, wildCards)
+      baseCount <- scala.math.pow(10, numDigits - wildCards - 1).toInt until scala.math.pow(10, numDigits - wildCards).toInt
+    } yield {
+      (0 to 9).map { digit =>
+        val it = int2digits(baseCount).reverseIterator
+        val digits = locations.foldRight(List.empty[Int]) { case (b, digitsTail) =>
+          (if (b) digit else it.next()) :: digitsTail
+        }
+        digits2Int(digits)
+      }.filter { n =>
+        new Number(n).isPrime
+      }
+    }).find(_.length > 7)
+  }
 
 
   def problem46: Option[BigInt] = {
