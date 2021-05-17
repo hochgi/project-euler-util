@@ -7,7 +7,19 @@ import scala.util.control.Breaks.{break, breakable}
 object Main extends App {
 
 
-  println(problem51)
+  println(problem52)
+
+  def problem52: Option[Int] = Iterator.from(1).find { i =>
+    val i2 = int2digits(i * 2).sorted
+    val i3 = int2digits(i * 3).sorted
+    val i4 = int2digits(i * 4).sorted
+    val i5 = int2digits(i * 5).sorted
+    val i6 = int2digits(i * 6).sorted
+    i2 == i3 &&
+    i3 == i4 &&
+    i4 == i5 &&
+    i5 == i6
+  }
 
   def problem51: Option[Seq[Int]] = {
 
