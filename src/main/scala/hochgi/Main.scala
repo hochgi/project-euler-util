@@ -7,7 +7,26 @@ import scala.util.control.Breaks.{break, breakable}
 object Main extends App {
 
 
-  println(problem53)
+  println(problem55)
+
+  def problem55: Int = {
+    def reverseAndAdd(i: BigInt): BigInt = i + digits2BigInt(bigint2digits(i).reverse)
+
+    def isLychrel(i: BigInt, iterationsLeft: Int): Boolean = (iterationsLeft == 0) || {
+      val j = reverseAndAdd(i)
+      if (isPalindrom(bigint2digits(j))) false
+      else isLychrel(j, iterationsLeft - 1)
+    }
+
+    (10000 to 0 by -1).foldLeft(Set.empty[Int] -> 0) { case ((s0, count), i) =>
+      if(s0(i)) (s0 + i, count)
+      else {
+        val r = isLychrel(i, 50)
+        if (r) (s0, count + 1)
+        else (s0 + i, count)
+      }
+    }
+  }._2
 
   def problem53: Int = {
     (for {

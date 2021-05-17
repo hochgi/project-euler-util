@@ -89,6 +89,14 @@ package object math {
     else int2digits(i / 10, (i % 10) :: acc)
   }
 
+  def bigint2digits(i: BigInt, acc: List[Int] = Nil): List[Int] = {
+    if(i == 0) {
+      if(acc.nonEmpty) acc
+      else List(0)
+    }
+    else bigint2digits(i / 10, (i % 10).intValue :: acc)
+  }
+
   /**
    * n!
    */
