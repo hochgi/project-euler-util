@@ -1,13 +1,20 @@
 package hochgi
 
-import hochgi.math.{Number, Rational, bigSqrtExact, digits2BigInt, digits2Int, int2digits, primes, digitMask}
+import hochgi.math._
 
 import scala.util.control.Breaks.{break, breakable}
 
 object Main extends App {
 
 
-  println(problem52)
+  println(problem53)
+
+  def problem53: Int = {
+    (for {
+      n <- 10 to 100
+      r <- (0 to n).find(k => binom(n,k) >= 1000000)
+    } yield n + 1 - (2*r)).sum
+  }
 
   def problem52: Option[Int] = Iterator.from(1).find { i =>
     val i2 = int2digits(i * 2).sorted

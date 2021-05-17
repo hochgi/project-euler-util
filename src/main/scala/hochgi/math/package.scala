@@ -1,6 +1,7 @@
 package hochgi
 
 import scala.annotation._
+import scala.collection.mutable.{Map => MMap}
 
 package object math {
   //IMPLICITS:
@@ -103,6 +104,9 @@ package object math {
     fHelper(n, 1)
   }
 
+
+
+
   val binom10: Map[(Int,Int), Int] = {
 
     def binom(n: Int, k: Int, acc: Map[(Int, Int), Int]): Map[(Int, Int), Int] =
@@ -116,6 +120,17 @@ package object math {
         binom(n, k, acck)
       }
     }
+  }
+
+  private[this] val binomap: MMap[(Int,Int), Int] = MMap.from(binom10)
+
+  def binom(n: Int, k: Int): Int = {
+    if(n == k || k == 0) 1
+    else binomap.applyOrElse(n -> k, (_: (Int, Int)) => {
+      val r = binom(n - 1, k - 1) + binom(n - 1, k)
+      binomap.update(n -> k, r)
+      r
+    })
   }
 
   def digitMask(n: Int, k: Int): Iterator[List[Boolean]] = {
