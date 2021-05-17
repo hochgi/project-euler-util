@@ -7,7 +7,12 @@ import scala.util.control.Breaks.{break, breakable}
 object Main extends App {
 
 
-  println(problem55)
+  println(problem56)
+
+  def problem56: Int = (for {
+    a <- Iterator.range(1, 100)
+    b <- Iterator.range(1, 100)
+  } yield bigint2digits(math.numberPow(a, b)).sum).max
 
   def problem55: Int = {
     def reverseAndAdd(i: BigInt): BigInt = i + digits2BigInt(bigint2digits(i).reverse)
